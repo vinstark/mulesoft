@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+    xmlns:spring="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd">
+    <file:connector name="" readFromDirectory="D:\Users\vinkushw\test" autoDelete="true" streaming="true" validateConnections="true" doc:name="File"/>
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8089" doc:name="HTTP Listener Configuration"/>
+    <flow name="TestFlow">
+      <http:listener config-ref="HTTP_Listener_Configuration" path="/delta"  doc:name="HTTP" allowedMethods="POST"/>
+      <json:json-to-object-transformer returnClass="java.util.List" doc:name="JSON to Object"/>
+      <foreach collection="#[message.payload]" doc:name="For Each">
+       <logger message="Key name :- #[message.payload.Key] " level="INFO" doc:name="Logger"/>
+         <choice doc:name="Choice">
+             <when expression="#[message.payload.Key=='EntityType']">
+                 <logger level="INFO" doc:name="Logger" message="Entity Type matched"/>
+             </when>
+             <otherwise>
+                 <logger level="" doc:name="Logger" message="Entity Type not matched for Key #[message.payload.Key]"/>
+             </otherwise>
+         </choice>
+      </foreach>
+     <json:object-to-json-transformer doc:name="Object to JSON"/>
+  </flow>
+  </mule>
